@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>光纖損耗測量計算器 / Fiber Loss Measurement Calculator</title>
+    <title>光纖損耗測量計算器/ Fiber Loss Measurement Calculator</title>
     <style>
         * {
             margin: 0;
@@ -31,7 +31,8 @@
             background: linear-gradient(135deg, #2c3e50, #34495e);
             color: white;
             padding: 30px;
-            text-align: center;}
+            text-align: center;
+        }
 
         .header h1 {
             font-size: 28px;
@@ -51,8 +52,7 @@
             margin-bottom: 30px;
             padding: 25px;
             border: 2px solid #ecf0f1;
-            border-radius: 10px;
-            background: #fafafa;
+            border-radius: 10px;background: #fafafa;
         }
 
         .section-title {
@@ -71,12 +71,20 @@
 
         .baseline::before { content: "📏"; }
         .measurement::before { content: "🔬"; }
+        .connector::before { content: "🔌"; }
         .calculation::before { content: "🧮"; }
         .analysis::before { content: "📊"; }
 
         .input-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group-three {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -133,6 +141,66 @@
         .wavelength-option input[type="radio"]:checked + label {
             color: #3498db;
             font-weight: bold;
+        }
+
+        .connector-info {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .connector-info h4 {
+            color: #2980b9;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .connector-info h4::before {
+            content: "💡";
+            margin-right: 8px;
+        }
+
+        .connector-loss-display {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .baseline-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .baseline-info h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .baseline-info h4::before {
+            content: "📐";
+            margin-right: 8px;
+        }
+
+        .baseline-loss-display {
+            background: rgba(108, 117, 125, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #495057;
         }
 
         .calculate-btn {
@@ -238,7 +306,7 @@
         }
 
         @media (max-width: 768px) {
-            .input-group, .result-grid {
+            .input-group, .input-group-three, .result-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -261,7 +329,8 @@
             border: 2px solid #3498db;
             border-radius: 10px;
             padding: 20px;
-            margin: 20px 0;text-align: center;
+            margin: 20px 0;
+            text-align: center;
         }
 
         .diagram-step {
@@ -295,37 +364,69 @@
                 <div style="margin: 20px 0;">
                     <div class="diagram-step">Power Source</div>
                     <span class="arrow">→</span>
-                    <div class="diagram-step">50cm 參考線<br/>Reference Cable</div>
+                    <div class="diagram-step">基準線A<br/>Reference A</div>
                     <span class="arrow">→</span>
-                    <div class="diagram-step">Power Meter<br/>(基準值A / Baseline A)</div>
+                    <div class="diagram-step">基準線B<br/>Reference B</div>
+                    <span class="arrow">→</span>
+                    <div class="diagram-step">Power Meter<br/>(基準值/ Baseline)</div>
                 </div>
                 <div style="margin: 20px 0;">
                     <div class="diagram-step">Power Source</div>
                     <span class="arrow">→</span>
                     <div class="diagram-step">待測光纖<br/>Test Fiber</div>
                     <span class="arrow">→</span>
-                    <div class="diagram-step">Power Meter<br/>(測量值 B / Measured B)</div>
+                    <div class="diagram-step">Power Meter<br/>(測量值 / Measured)</div>
                 </div>
                 <div style="margin-top: 20px; font-weight: bold; color: #e74c3c;">
-                    光纖損耗 / Fiber Loss = A - B (dB)
+                    淨光纖損耗 / Net Fiber Loss = 總損耗 - 基準線損耗 - 連接器損耗<br/>
+                    Net Fiber Loss = Total Loss - Reference Cable Loss - Connector Loss
                 </div>
             </div>
 
             <!-- 1. 基準測量 -->
             <div class="section">
-                <div class="section-title baseline">1. 基準測量 / Baseline Measurement</div>
+                <div class="section-title baseline">1. 基準測量/ Baseline Measurement</div>
                 <div class="input-group">
                     <div class="input-field">
-                        <label for="baseline-power">基準功率值 A (dBm) / Baseline Power A (dBm):</label>
+                        <label for="baseline-power">基準功率值 (dBm) / Baseline Power (dBm):</label>
                         <input type="number" id="baseline-power" step="0.01" placeholder="例如: -3.25">
                     </div>
                     <div class="input-field">
-                        <label for="reference-length">參考線長度 (cm) / Reference Cable Length (cm):</label>
-                        <input type="number" id="reference-length" value="50" step="1">
-                    </div></div>
-                <p style="color: #7f8c8d; font-size: 14px; margin-top: 10px;">
-                💡 使用 50cm 參考線連接 Power TX 到 Power Meter，記錄顯示的功率值作為基準<br/>
-                    Use 50cm reference cable to connect Power TX to Power Meter, record displayed power as baseline
+                        <label for="measured-power">測量功率值 (dBm) / Measured Power (dBm):</label>
+                        <input type="number" id="measured-power" step="0.01" placeholder="例如: -8.75">
+                    </div>
+                </div>
+                
+                <h4 style="color: #2c3e50; margin: 20px 0 15px 0;">基準線設定 / Reference Cable Configuration</h4>
+                <div class="input-group-three">
+                    <div class="input-field">
+                        <label for="reference-a-length">基準線A長度 (cm) / Reference A Length (cm):</label>
+                        <input type="number" id="reference-a-length" value="50" step="1" oninput="updateBaselineLoss()">
+                    </div>
+                    <div class="input-field">
+                        <label for="reference-b-length">基準線B長度 (cm) / Reference B Length (cm):</label>
+                        <input type="number" id="reference-b-length" value="50" step="1" oninput="updateBaselineLoss()">
+                    </div>
+                    <div class="input-field">
+                        <label for="reference-attenuation">基準線衰減係數 (dB/km) / Reference Attenuation (dB/km):</label>
+                        <input type="number" id="reference-attenuation" value="0.35" step="0.01" oninput="updateBaselineLoss()">
+                    </div>
+                </div>
+                
+                <div class="baseline-info">
+                    <h4>基準線損耗計算 / Reference Cable Loss Calculation</h4>
+                    <p style="font-size: 14px; color: #495057; margin-bottom: 10px;">
+                        基準線總長度會影響基準測量，需要從總損耗中扣除以獲得準確的光纖損耗。<br/>
+                        Total reference cable length affects baseline measurement and should be deducted for accurate fiber loss.
+                    </p>
+                    <div class="baseline-loss-display" id="baseline-loss-display">
+                        基準線總損耗 / Total Reference Loss:0.000 dB (100 cm)
+                    </div>
+                </div>
+                
+                <p style="color: #7f8c8d; font-size: 14px; margin-top: 15px;">
+                💡 使用基準線A + 基準線B連接 Power TX到 Power Meter，記錄顯示的功率值作為基準<br/>
+                    Use Reference A + Reference B to connect Power TX to Power Meter, record displayed power as baseline
                 </p>
             </div>
 
@@ -334,23 +435,51 @@
                 <div class="section-title measurement">2. 待測光纖測量 / Test Fiber Measurement</div>
                 <div class="input-group">
                     <div class="input-field">
-                        <label for="measured-power">測量功率值 B (dBm) / Measured Power B (dBm):</label>
-                        <input type="number" id="measured-power" step="0.01" placeholder="例如: -8.75">
-                    </div>
-                    <div class="input-field">
                         <label for="fiber-length">光纖長度 (m) / Fiber Length (m):</label>
                         <input type="number" id="fiber-length" step="0.1" placeholder="例如: 150.5">
+                    </div>
+                    <div class="input-field">
+                        <label for="fiber-type">光纖類型 / Fiber Type:</label>
+                        <select id="fiber-type">
+                            <option value="single-mode">單模光纖 / Single-mode</option>
+                            <option value="multi-mode">多模光纖 / Multi-mode</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. 波長選擇 -->
+            <!-- 3. LC連接器設定 -->
             <div class="section">
-                <div class="section-title">3. 測試波長 / Test Wavelength</div>
+                <div class="section-title connector">3. LC連接器設定 / LC Connector Configuration</div>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="lc-pairs">LC連接器對數 / LC Connector Pairs:</label>
+                        <input type="number" id="lc-pairs" value="0" min="0" step="1" placeholder="例如: 2" oninput="updateConnectorLoss()">
+                    </div>
+                    <div class="input-field">
+                        <label for="lc-loss-per-pair">每對損耗 (dB) / Loss per Pair (dB):</label>
+                        <input type="number" id="lc-loss-per-pair" value="0.5" step="0.1" placeholder="0.5" oninput="updateConnectorLoss()">
+                    </div>
+                </div>
+                <div class="connector-info">
+                    <h4>連接器損耗說明 / Connector Loss Information</h4>
+                    <p style="font-size: 14px; color: #34495e; margin-bottom: 10px;">
+                        LC連接器標準損耗為每對 0.5dB。每個連接點包含一對連接器（插頭與插座）。<br/>
+                        Standard LC connector loss is 0.5dB per mating pair. Each connection point includes one mating pair.
+                    </p>
+                    <div class="connector-loss-display" id="connector-loss-display">
+                        總連接器損耗 / Total Connector Loss: 0.0 dB (0 對/ pairs)
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 波長選擇 -->
+            <div class="section">
+                <div class="section-title">4. 測試波長 / Test Wavelength</div>
                 <div class="wavelength-selector">
                     <div class="wavelength-option">
                         <input type="radio" id="wl-1310" name="wavelength" value="1310" checked>
-                        <label for="wl-1310">1310 nm (0.30-0.35 dB/km)</label>
+                        <label for="wl-1310">1310 nm (0.30-0.35dB/km)</label>
                     </div>
                     <div class="wavelength-option">
                         <input type="radio" id="wl-1550" name="wavelength" value="1550">
@@ -373,23 +502,31 @@
                 </div>
             </div>
 
-            <button class="calculate-btn" onclick="calculateLoss()">🧮 計算光纖損耗 / Calculate Fiber Loss
-            </button>
+            <button class="calculate-btn" onclick="calculateLoss()">🧮 計算光纖損耗 / Calculate Fiber Loss</button>
 
             <div class="result" id="result">
                 <h2>測量結果 / Measurement Results</h2>
                 <div class="result-grid">
                     <div class="result-item">
-                        <h3>實際損耗 / Actual Loss</h3>
-                        <div class="value" id="actual-loss">--dB</div>
+                        <h3>實際總損耗 / Actual Total Loss</h3>
+                        <div class="value" id="actual-total-loss">--dB</div>
                     </div>
                     <div class="result-item">
-                        <h3>理論損耗範圍 / Theoretical Loss Range</h3>
-                        <div class="value" id="theoretical-loss">-- dB</div>
+                        <h3>淨光纖損耗 / Net Fiber Loss</h3>
+                        <div class="value" id="net-fiber-loss">-- dB</div>
                     </div>
                     <div class="result-item">
-                        <h3>損耗差異 / Loss Difference</h3>
-                        <div class="value" id="loss-difference">-- dB</div>
+                        <h3>理論光纖損耗範圍 / Theoretical Fiber Loss</h3>
+                        <div class="value" id="theoretical-fiber-loss">-- dB</div>
+                    </div><div class="result-item">
+                        <h3>基準線損耗 / Reference Loss</h3>
+                        <div class="value" id="baseline-loss-result">-- dB</div>
+                    </div>
+                </div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <h3>連接器損耗 / Connector Loss</h3>
+                        <div class="value" id="connector-loss-result">-- dB</div>
                     </div>
                     <div class="result-item">
                         <h3>連線狀態 / Connection Status</h3>
@@ -408,29 +545,40 @@
                 <h4>📐 計算公式 / Calculation Formulas</h4>
                 
                 <div class="formula">
-                    <strong>光纖損耗 / Fiber Loss:</strong><br/>
-                    Loss (dB) = A (基準功率) - B (測量功率)<br/>
-                    Loss (dB) = A (Baseline Power) - B (Measured Power)
+                    <strong>實際總損耗 / Actual Total Loss:</strong><br/>
+                    總損耗 (dB) = 基準功率 - 測量功率<br/>
+                    Total Loss (dB) = Baseline Power - Measured Power
                 </div>
 
                 <div class="formula">
-                    <strong>理論衰減 / Theoretical Attenuation:</strong><br/>
-                    理論損耗 = 長度 (km) × 衰減係數 (dB/km)<br/>
-                    Theoretical Loss = Length (km) × Attenuation Coefficient (dB/km)
+                    <strong>基準線損耗 / Reference Cable Loss:</strong><br/>
+                    基準線損耗 = (基準線A長度 + 基準線B長度) × 基準線衰減係數 ÷ 1000<br/>
+                    Reference Loss = (Ref A Length + Ref B Length) × Reference Attenuation ÷ 1000
                 </div>
 
                 <div class="formula">
-                    <strong>波長衰減係數 / Wavelength Attenuation Coefficients:</strong><br/>
-                    • 1310 nm: 0.30 ~ 0.35 dB/km (每公尺 0.0003 ~ 0.00035 dB)<br/>
-                    • 1550 nm: 0.17 ~ 0.20 dB/km (每公尺 0.00017 ~ 0.0002 dB)
+                    <strong>淨光纖損耗 / Net Fiber Loss:</strong><br/>
+                    淨光纖損耗 = 總損耗 - 基準線損耗 - 連接器損耗<br/>
+                    Net Fiber Loss = Total Loss - Reference Loss - Connector Loss
+                </div>
+
+                <div class="formula">
+                    <strong>連接器損耗 / Connector Loss:</strong><br/>
+                    連接器損耗 = LC連接器對數 × 每對損耗<br/>
+                    Connector Loss = LC Pairs × Loss per Pair
+                </div>
+
+                <div class="formula">
+                    <strong>理論光纖損耗 / Theoretical Fiber Loss:</strong><br/>
+                    理論損耗 = 光纖長度 (km) × 衰減係數 (dB/km)<br/>
+                    Theoretical Loss = Fiber Length (km) × Attenuation Coefficient (dB/km)
                 </div>
 
                 <div class="formula">
                     <strong>品質判斷標準 / Quality Assessment Criteria:</strong><br/>
-                    • 優良 Good: 實際損耗 ≤ 理論最大值 + 0.5 dB<br/>
-                    • 可接受 Acceptable: 理論最大值 + 0.5 dB < 實際損耗 ≤ 理論最大值 + 1.0 dB<br/>
-                    • 不良 Poor: 實際損耗 > 理論最大值 + 1.0 dB<br/>
-                    • 異常 Abnormal: 實際損耗 > 20 dB (連線可能中斷)
+                    • 優良 Good: 淨光纖損耗 ≤ 理論損耗最大值 + 0.3 dB<br/>
+                    • 可接受 Acceptable: 理論損耗最大值 + 0.3 dB < 淨光纖損耗 ≤ 理論損耗最大值 + 0.8 dB<br/>
+                    • 不良 Poor: 淨光纖損耗 > 理論損耗最大值 + 0.8 dB
                 </div>
             </div>
         </div>
@@ -449,6 +597,29 @@
             });
         });
 
+        // 更新基準線損耗顯示
+        function updateBaselineLoss() {
+            const refALength = parseFloat(document.getElementById('reference-a-length').value) || 0;
+            const refBLength = parseFloat(document.getElementById('reference-b-length').value) || 0;
+            const refAttenuation = parseFloat(document.getElementById('reference-attenuation').value) || 0.35;
+            
+            const totalRefLength = refALength + refBLength;
+            const baselineLoss = (totalRefLength / 100000) * refAttenuation; // 轉換cm到km
+            
+            document.getElementById('baseline-loss-display').textContent = 
+                `基準線總損耗 / Total Reference Loss: ${baselineLoss.toFixed(3)} dB (${totalRefLength} cm)`;
+        }
+
+        // 更新連接器損耗顯示
+        function updateConnectorLoss() {
+            const lcPairs = parseInt(document.getElementById('lc-pairs').value) || 0;
+            const lossPerPair = parseFloat(document.getElementById('lc-loss-per-pair').value) || 0.5;
+            const totalConnectorLoss = lcPairs * lossPerPair;
+            
+            document.getElementById('connector-loss-display').textContent = 
+                `總連接器損耗 / Total Connector Loss: ${totalConnectorLoss.toFixed(1)} dB (${lcPairs} 對 / pairs)`;
+        }
+
         function getAttenuationCoefficients() {
             const selectedWavelength = document.querySelector('input[name="wavelength"]:checked').value;
             
@@ -460,8 +631,7 @@
                 case 'custom':
                     const minAtten = parseFloat(document.getElementById('custom-atten-min').value) || 0.20;
                     const maxAtten = parseFloat(document.getElementById('custom-atten-max').value) || 0.25;
-                    return { min: Math.min(minAtten, maxAtten), max: Math.max(minAtten, maxAtten) };
-                default:
+                    return { min: Math.min(minAtten, maxAtten), max: Math.max(minAtten, maxAtten) };default:
                     return { min: 0.30, max: 0.35 };
             }
         }
@@ -471,6 +641,13 @@
             const baselinePower = parseFloat(document.getElementById('baseline-power').value);
             const measuredPower = parseFloat(document.getElementById('measured-power').value);
             const fiberLength = parseFloat(document.getElementById('fiber-length').value);
+            const lcPairs = parseInt(document.getElementById('lc-pairs').value) || 0;
+            const lossPerPair = parseFloat(document.getElementById('lc-loss-per-pair').value) || 0.5;
+            
+            // 基準線參數
+            const refALength = parseFloat(document.getElementById('reference-a-length').value) || 0;
+            const refBLength = parseFloat(document.getElementById('reference-b-length').value) || 0;
+            const refAttenuation = parseFloat(document.getElementById('reference-attenuation').value) || 0.35;
 
             // 驗證輸入
             if (isNaN(baselinePower) || isNaN(measuredPower) || isNaN(fiberLength)) {
@@ -483,47 +660,47 @@
                 return;
             }
 
-            // 計算實際損耗
-            const actualLoss = baselinePower - measuredPower;
-            
-            // 獲取衰減係數
+            // 計算各種損耗
+            const totalRefLength = refALength + refBLength;
+            const baselineLoss = (totalRefLength / 100000) * refAttenuation; // cm轉km
+            const connectorLoss = lcPairs * lossPerPair;
+            const actualTotalLoss = baselinePower - measuredPower;
+            const netFiberLoss = actualTotalLoss - baselineLoss - connectorLoss;
+            // 獲取衰減係數並計算理論損耗
             const attenuation = getAttenuationCoefficients();
-            const fiberLengthKm = fiberLength / 1000; // 轉換為公里
+            const fiberLengthKm = fiberLength / 1000;
+            const theoreticalFiberLossMin = fiberLengthKm * attenuation.min;
+            const theoreticalFiberLossMax = fiberLengthKm * attenuation.max;
             
-            // 計算理論損耗範圍
-            const theoreticalLossMin = fiberLengthKm * attenuation.min;
-            const theoreticalLossMax = fiberLengthKm * attenuation.max;
-            
-            // 計算損耗差異
-            const lossDifference = actualLoss - theoreticalLossMax;
-
-            // 判斷連線狀態
+            // 判斷連線狀態（基於淨光纖損耗）
             let connectionStatus, statusClass, analysisText;
             
-            if (actualLoss > 20) {
+            if (actualTotalLoss >20) {
                 connectionStatus = '異常 Abnormal';
                 statusClass = 'status-poor';
-                analysisText = '損耗過高，連線可能中斷或存在嚴重問題。建議檢查光纖連接、彎曲或斷裂。';
-            } else if (actualLoss <= theoreticalLossMax + 0.5) {
+                analysisText = '總損耗過高，連線可能中斷或存在嚴重問題。';
+            } else if (netFiberLoss <= theoreticalFiberLossMax + 0.3) {
                 connectionStatus = '優良 Good';
                 statusClass = 'status-good';
-                analysisText = '光纖損耗在正常範圍內，連線品質良好。';
-            } else if (actualLoss <= theoreticalLossMax + 1.0) {
+                analysisText = '淨光纖損耗在正常範圍內，連線品質良好。';
+            } else if (netFiberLoss <= theoreticalFiberLossMax + 0.8) {
                 connectionStatus = '可接受 Acceptable';
                 statusClass = 'status-warning';
-                analysisText = '光纖損耗稍高於理論值，但仍在可接受範圍內。建議檢查連接器清潔度。';
+                analysisText = '淨光纖損耗稍高於理論值，但仍在可接受範圍內。';
             } else {
                 connectionStatus = '不良 Poor';
                 statusClass = 'status-poor';
-                analysisText = '光纖損耗明顯高於理論值，可能存在連接不良、彎曲過度或其他問題。';
+                analysisText = '淨光纖損耗明顯高於理論值，可能存在光纖問題。';
             }
 
             // 顯示結果
-            document.getElementById('actual-loss').textContent = actualLoss.toFixed(2) + ' dB';
-            document.getElementById('theoretical-loss').textContent = 
-                theoreticalLossMin.toFixed(2) + ' ~ ' + theoreticalLossMax.toFixed(2) + ' dB';
-            document.getElementById('loss-difference').textContent =
-                (lossDifference >= 0 ? '+' : '') + lossDifference.toFixed(2) + ' dB';
+            document.getElementById('actual-total-loss').textContent = actualTotalLoss.toFixed(2) + ' dB';
+            document.getElementById('net-fiber-loss').textContent = netFiberLoss.toFixed(2) + ' dB';
+            document.getElementById('theoretical-fiber-loss').textContent = 
+                theoreticalFiberLossMin.toFixed(2) + ' ~ ' + theoreticalFiberLossMax.toFixed(2) + ' dB';
+            document.getElementById('baseline-loss-result').textContent = baselineLoss.toFixed(3) + ' dB';
+            document.getElementById('connector-loss-result').textContent = connectorLoss.toFixed(1) + ' dB';
+            
             const statusElement = document.getElementById('connection-status');
             statusElement.innerHTML = `<span class="status-indicator ${statusClass}">${connectionStatus}</span>`;
 
@@ -535,13 +712,26 @@
                 <ul style="margin-left: 20px; margin-top: 10px;">
                     <li>測試波長 / Wavelength: ${wavelengthText}</li>
                     <li>光纖長度 / Fiber Length: ${fiberLength} m (${fiberLengthKm.toFixed(3)} km)</li>
-                    <li>衰減係數範圍 / Attenuation Range: ${attenuation.min} ~ ${attenuation.max} dB/km</li><li>基準功率 / Baseline Power: ${baselinePower} dBm</li>
-                    <li>測量功率 / Measured Power: ${measuredPower} dBm</li>
+                    <li>衰減係數範圍 / Attenuation Range: ${attenuation.min} ~ ${attenuation.max} dB/km</li>
+                    <li>基準線 / Reference Cable: A=${refALength}cm + B=${refBLength}cm = ${totalRefLength}cm</li>
+                    <li>LC連接器 / LC Connectors: ${lcPairs} 對 × ${lossPerPair}dB = ${connectorLoss.toFixed(1)} dB</li>
                 </ul>
+                
+                <p style="margin-top: 15px;"><strong>損耗分解 / Loss Breakdown:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>實際總損耗 / Total Loss: ${actualTotalLoss.toFixed(2)} dB</li>
+                    <li>基準線損耗 / Reference Loss: ${baselineLoss.toFixed(3)} dB</li>
+                    <li>連接器損耗 / Connector Loss: ${connectorLoss.toFixed(1)} dB</li>
+                    <li>淨光纖損耗 / Net Fiber Loss: ${netFiberLoss.toFixed(2)} dB</li>
+                    <li>理論光纖損耗 / Theoretical: ${theoreticalFiberLossMin.toFixed(2)} ~ ${theoreticalFiberLossMax.toFixed(2)} dB</li>
+                </ul>
+                
                 <p style="margin-top: 15px;"><strong>分析結果 / Analysis:</strong></p>
-                <p style="margin-top: 10px;">${analysisText}</p><p style="margin-top: 10px; font-size: 14px; color: rgba(255,255,255,0.8);">
-                    💡 建議：定期進行光纖損耗測試，建立基準數據庫，有助於預防性維護。<br/>
-                    Recommendation: Regular fiber loss testing and baseline database establishment helps preventive maintenance.
+                <p style="margin-top: 10px;">${analysisText}</p>
+                
+                <p style="margin-top: 10px; font-size: 14px; color: rgba(255,255,255,0.8);">
+                    💡 建議：使用相同規格的基準線，定期校準測試設備，確保測量準確性。<br/>
+                    Recommendation: Use identical reference cables, regular equipment calibration for measurement accuracy.
                 </p>
             `;
 
@@ -550,12 +740,9 @@
             document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 自動計算功能（可選）
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', function() {
-                // 可以在這裡添加即時計算功能
-            });
-        });
+        // 初始化顯示
+        updateBaselineLoss();
+        updateConnectorLoss();
     </script>
 </body>
 </html>
